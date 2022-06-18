@@ -1,4 +1,7 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import itertools
+import numpy as np
 
 # Inputs
 airport = 'Logan'
@@ -19,9 +22,12 @@ ap_c = ap_codes[airport]
 df_international = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/T_T100I_SEGMENT_ALL_CARRIER.csv')
 df_domestic = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/T_T100D_SEGMENT_ALL_CARRIER.csv')
 
+# Init lookup tables
 l_airline_id = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/Lookup tables/L_AIRLINE_ID.csv')
 l_airline_id.rename(columns={'Code': 'AIRLINE_ID', 'Description': 'CARRIER_NAME'}, inplace=True)
 l_airline_id['CARRIER_NAME'] = l_airline_id['CARRIER_NAME'].str.split(': ').str[0]
+
+l_airport_id = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/Lookup tables/L_AIRPORT_ID.csv')
 
 
 # TODO: as a sanity check, compare data before and after preprocessing for each airport
@@ -100,7 +106,7 @@ def top_airlines(dfi, dfd, by='PASSENGERS'):
     # d/b/a abbreviation means Doing Business As.
 
     # Group by carrier ID
-    carriers = pd.concat([dfi_loc, dfd_loc]).groupby('AIRLINE_ID')  # concats international and domestic
+    carriers = pd.concat([dfi, dfd]).groupby('AIRLINE_ID')  # concats international and domestic
     intl_carriers = dfi.groupby('AIRLINE_ID')
     dom_carriers = dfd.groupby('AIRLINE_ID')
 
@@ -156,6 +162,36 @@ def top_airlines(dfi, dfd, by='PASSENGERS'):
 
 
 df_top20, df_intl_top20, df_dom_top20 = top_airlines(dfi_loc, dfd_loc)
+
+
+def flight_dist_hist(dfi, dfd, format='distance'):
+    df = pd.concat([dfi, dfd])  # concats international and domestic
+
+    distances = []
+    for i, row in df.iterrows():
+        distances.append(int(row['DEPARTURES_PERFORMED']) * [row['DISTANCE']])
+
+    distances = list(itertools.chain(*distances))
+
+    if format == 'distance':
+        plt.hist(distances,bins=50)
+        plt.title('Histogram of flight distances at {}'.format(airport))
+        plt.xlabel('Flight Distance (miles)')
+        plt.ylabel('Count')
+        plt.show()
+    elif format == 'time':
+        avd_speed = 500  # Rough average commercial passenger jet flight speed (m/h)
+        time = np.array(distances)/avd_speed # time in hours
+
+        plt.hist(time, bins=50)
+        plt.title('Histogram of flight approx. time at {}'.format(airport))
+        plt.xlabel('Approx. flight time (hours)')
+        plt.ylabel('Count')
+        plt.show()
+    else:
+        return "format must be {'distance','time'}"
+
+d = flight_dist_hist(dfi_loc, dfd_loc,format='time')
 
 # TODO:
 #       2. Histogram of distances for arriving planes
