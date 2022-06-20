@@ -4,7 +4,7 @@ import itertools
 import numpy as np
 
 # Inputs
-airport = 'Logan'
+airport = 'TF Green'
 
 # Candidate airport codes;
 #   - identification number assigned by US DOT to identify a unique airport (more stable then 3-digit alphanumeric code)
@@ -164,7 +164,7 @@ def top_airlines(dfi, dfd, by='PASSENGERS'):
 df_top20, df_intl_top20, df_dom_top20 = top_airlines(dfi_loc, dfd_loc)
 
 
-def flight_dist_hist(dfi, dfd, format='distance'):
+def airport_flight_hist(dfi, dfd, format='time'):
     df = pd.concat([dfi, dfd])  # concats international and domestic
 
     distances = []
@@ -174,25 +174,72 @@ def flight_dist_hist(dfi, dfd, format='distance'):
     distances = list(itertools.chain(*distances))
 
     if format == 'distance':
-        plt.hist(distances,bins=50)
+        plt.hist(distances, bins=20)
         plt.title('Histogram of flight distances at {}'.format(airport))
         plt.xlabel('Flight Distance (miles)')
-        plt.ylabel('Count')
+        plt.ylabel('Number of flights')
         plt.show()
     elif format == 'time':
-        avd_speed = 500  # Rough average commercial passenger jet flight speed (m/h)
-        time = np.array(distances)/avd_speed # time in hours
+        avg_speed = 500  # Rough average commercial passenger jet flight speed (m/h)
+        time = np.array(distances) / avg_speed  # time in hours
 
-        plt.hist(time, bins=50)
+        plt.hist(time, bins=20)
         plt.title('Histogram of flight approx. time at {}'.format(airport))
         plt.xlabel('Approx. flight time (hours)')
-        plt.ylabel('Count')
+        plt.ylabel('Number of flights')
         plt.show()
     else:
         return "format must be {'distance','time'}"
 
-d = flight_dist_hist(dfi_loc, dfd_loc,format='time')
 
-# TODO:
-#       2. Histogram of distances for arriving planes
-#       2. Most common origin airports/locations
+airport_flight_hist(dfi_loc, dfd_loc, format='time')
+
+
+def airline_flight_hist(dfi, dfd, format='time'):
+    df = pd.concat([dfi, dfd])  # concats international and domestic
+    carriers = df.groupby('AIRLINE_ID')
+    carriers_sum = carriers.sum()
+
+    tot_pass = carriers_sum['PASSENGERS'].astype(int).sort_values(ascending=False)
+
+    df_top5 = pd.DataFrame(tot_pass).head(5)  # Get top 5 airlines by passenger
+    df_top5 = df_top5.merge(l_airline_id, on='AIRLINE_ID')  # merge with airline name
+
+    fig, axes = plt.subplots(5, 1, sharex='all', sharey='all', figsize=(8,15), constrained_layout=True)
+
+    a = 0
+    for i, row in df_top5.iterrows():
+        id = row['AIRLINE_ID']
+        name = row['CARRIER_NAME']
+        airline = carriers.get_group(id)
+
+        distances = []
+        for ii, row2 in airline.iterrows():
+            distances.append(int(row2['DEPARTURES_PERFORMED']) * [row2['DISTANCE']])
+
+        distances = list(itertools.chain(*distances))
+
+        if format == 'distance':
+            axes[a].hist(distances, bins=15, orientation='horizontal', facecolor='C{}'.format(a))
+            axes[a].set_ylabel(name)
+        elif format == 'time':
+            avg_speed = 500  # Rough average commercial passenger jet flight speed (m/h)
+            time = np.array(distances) / avg_speed  # time in hours
+
+            axes[a].hist(time, bins=15, orientation='horizontal', facecolor='C{}'.format(a))
+            axes[a].set_ylabel(name)
+        else:
+            return "format must be {'distance','time'}"
+
+        a += 1
+
+    old_ylim = axes[0].get_ylim()
+    if old_ylim[1] > 10:
+        axes[0].set_ylim(old_ylim[0],10.0)
+
+    plt.xlabel('Number of flights')
+    fig.supylabel('Flight time (hours)')
+    fig.suptitle('Flight time histograms for top 5 airlines at {}'.format(airport))
+    plt.show()
+
+airline_flight_hist(dfi_loc, dfd_loc)
