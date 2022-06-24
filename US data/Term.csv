@@ -1,0 +1,22 @@
+TERM,DEFINITION
+Air Freight,"Property, other than express and passenger baggage transported by air."
+Air Time,The airborne hours of aircraft computed from the moment an aircraft leaves the ground until it touches the ground at the end of a flight stage.
+Aircraft Configuration,"The type of payload an aircraft was designed to carry: passenger, cargo, or both."
+Airline ID,"An identification number assigned by US DOT to identify a unique airline (carrier). A unique airline (carrier) is defined as one holding and reporting under the same DOT certificate regardless of its Code, Name, or holding company/corporation. Use this field for analysis across a range of years."
+Airport Code,A three character alpha-numeric code issued by the U.S. Department of Transportation which is the official designation of the airport.  The airport code is not always unique to a specific airport because airport codes can change or can be reused.
+Airport ID,An identification number assigned by US DOT to identify a unique airport.  Use this field for airport analysis across a range of years because an airport can change its airport code and airport codes can be reused.
+Carrier Code,"Code assigned by IATA and commonly used to identify a carrier. As the same code may have been assigned to different carriers over time, the code is not always unique."
+City Market ID,An identification number assigned by US DOT to identify a city market.  Use this field to consolidate airports serving the same city market.
+Departures Performed,Takeoffs made at an airport. (same as Completed Departures)
+Departures Scheduled,"Takeoffs scheduled at an airport, as set forth in published schedules. (same as Scheduled Departures)"
+Mile,"A statute mile (5,280 feet). All mileage computations are based on statute miles."
+Passenger,Any person on board a flight who is not a member of the flight or cabin crew.
+Payload,"Equal to the certificated takeoff weight of an aircraft, less the empty weight, less all justifiable aircraft equipment, and less the operating load (consisting of minimum fuel load, oil, flight crew, steward's supplies, etc)."
+Ramp To Ramp Time,"The time computed from the moment an aircraft first moves under its own power for purposes of flight, until it comes to rest at the next point of landing."
+Revenue,Pertaining to activities for which remuneration is received by the carrier.
+Seats Available,Installed seats in an aircraft (including seats in lounges) exclusive of any seats not offered for sale to the public by the carrier; provided that in no instance shall any seat sold be excluded from the count of available seats.
+Segment,A pair of points served or scheduled to be served by a single stage of at least one flight at any given time.
+Unique Carrier,"Unique Carrier Code. It is the Carrier Code most recently used by a carrier. A numeric suffix is used to distinguish duplicate codes, for example, PA, PA (1), PA (2). Use this field to perform analysis of data reported by one and only one carrier."
+Unique Carrier Entity,"Unique Carrier Entity. This field distinguishes entities used by two or more carriers with a numeric suffix, for example, 06038 and 06038 (1)."
+Unique Carrier Name,"Unique Carrier Name. It is the name most recently used by a carrier. If two or more carriers have the same most recent name, a numeric suffix is used to distinguish them, for example, Air Caribbean, Air Caribbean (1)."
+World Area Code (WAC),"Numeric codes used to identify geopolitical areas such as countries, states (U.S.), provinces (Canada), and territories or possessions of certain countries. The codes are used within the various data banks maintained by the Office of Airline Information (OAI) and are created by OAI."
