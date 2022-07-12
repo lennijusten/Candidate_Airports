@@ -4,9 +4,9 @@ import itertools
 import numpy as np
 
 # Inputs
-airport = 'Bradley'
+airport = 'Logan'
 avg_speed = 500  # Rough average commercial passenger jet flight speed (m/h)
-time_thesh = 2  # Filter by flights less the time_thresh (hours)
+time_thesh = 3  # Filter by flights less the time_thresh (hours)
 
 # Candidate airport codes;
 #   - identification number assigned by US DOT to identify a unique airport (more stable then 3-digit alphanumeric code)
@@ -118,12 +118,13 @@ def top_airlines(dfi, dfd, by='DEPARTURES_PERFORMED'):
     # d/b/a abbreviation means Doing Business As.
 
     # Group by carrier ID
-    carriers = pd.concat([dfi, dfd]).groupby('AIRLINE_ID')  # concats international and domestic
+    carriers = pd.concat([dfi, dfd])
+    carriers_g = carriers.groupby('AIRLINE_ID')  # concats international and domestic
     intl_carriers = dfi.groupby('AIRLINE_ID')
     dom_carriers = dfd.groupby('AIRLINE_ID')
 
     # Sum columns over airline groups (do this once to save resources)
-    carriers_sum = carriers.sum()
+    carriers_sum = carriers_g.sum()
     intl_carriers_sum = intl_carriers.sum()
     dom_carriers_sum = dom_carriers.sum()
 
@@ -169,8 +170,8 @@ def top_airlines(dfi, dfd, by='DEPARTURES_PERFORMED'):
     df_dom_top20 = df_dom_top20.merge(l_airline_id, on='AIRLINE_ID')
 
     # Add airline arrival percentage stats
-    df_top20['PERCENT_DEPARTURES'] = df_top20['DEPARTURES_PERFORMED'] / df_top20['DEPARTURES_PERFORMED'].sum() * 100
-    df_top20['PERCENT_PASSENGERS'] = df_top20['PASSENGERS'] / df_top20['PASSENGERS'].sum() * 100
+    df_top20['PERCENT_DEPARTURES'] = df_top20['DEPARTURES_PERFORMED'] / carriers['DEPARTURES_PERFORMED'].sum() * 100
+    df_top20['PERCENT_PASSENGERS'] = df_top20['PASSENGERS'] / carriers['PASSENGERS'].sum() * 100
 
     # Add avg. planes per day
     df_top20['PLANES/DAY'] = df_top20['DEPARTURES_PERFORMED'] / 365
