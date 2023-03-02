@@ -3,10 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # import domestic + international data
-df_2021 = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/US data/Logan airport (last 6 months)/T_T100_SEGMENT_US_CARRIER_ONLY_2021.csv')
-df_2022 = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/US data/Logan airport (last 6 months)/T_T100_SEGMENT_US_CARRIER_ONLY_2022.csv')
-
-df = pd.concat([df_2021, df_2022])
+df_2019 = pd.read_csv('/Users/lenni/PycharmProjects/Candidate_Airports/US data/2019/T_T100_SEGMENT_ALL_CARRIER_2019.csv')
 
 # Inputs
 airport = 'Logan'
@@ -45,7 +42,7 @@ def preprocess(df):
     return df_temp
 
 
-df1 = preprocess(df)
+df1 = preprocess(df_2019)
 
 
 # Get all arrival flights to an airport
@@ -55,17 +52,7 @@ def get_arrivals(df, code):
 
 df_logan = get_arrivals(df1, logan_code)
 
-# select 12 months with available data
-range_2021 = [3,4,5,6,7,8,9,10,11,12]
-
-df_logan_2021 = df_logan.loc[df_logan['YEAR']==2021]
-df_logan_2022 = df_logan.loc[df_logan['YEAR']==2022]
-
-df_logan_2021_inrange = df_logan_2021.loc[df_logan_2021['MONTH'].isin(range_2021)]
-
-df_logan1 = pd.concat([df_logan_2022,df_logan_2021_inrange])
-
-df_logan1.to_csv('Logan_arrivals_mar2021-feb2022.csv')
+df_logan.to_csv('Logan_arrivals_2019.csv')
 
 # Analysis 1: Flights and passenger by flight time
 
@@ -74,7 +61,7 @@ n_passengers = []
 labels = []
 
 for b in np.arange(0,16,1):
-    temp = df_logan1.loc[(df_logan1['APPROX_TIME'] >= b) & (df_logan1['APPROX_TIME'] < b+1)]
+    temp = df_logan.loc[(df_logan['APPROX_TIME'] >= b) & (df_logan['APPROX_TIME'] < b+1)]
     n_flights.append(temp['DEPARTURES_PERFORMED'].sum())
     n_passengers.append(temp['PASSENGERS'].sum())
     labels.append('{}'.format(b+1))
@@ -86,14 +73,14 @@ plt.bar(X_axis + 0.2, n_passengers, 0.4, color='C0', label='Passengers')
 plt.xticks(X_axis, labels)
 plt.xlabel("Flight time")
 plt.ylabel("Number of passengers")
-plt.title('Arriving passengers by flight time at BOS between Mar 2021 and Feb 2022', y=1.07)
+plt.title('Arriving passengers by flight time at BOS in 2019', y=1.07)
 plt.show()
 
 plt.bar(X_axis - 0.2, n_flights, 0.4, color='C1', label='Flights')
 plt.xticks(X_axis, labels)
 plt.xlabel("Flight time")
 plt.ylabel("Number of flights")
-plt.title('Arriving flights by flight time at BOS between Mar 2021 and Feb 2022')
+plt.title('Arriving flights by flight time at BOS in 2019')
 plt.show()
 
 # Analysis 2: Flights and passengers per month
@@ -103,7 +90,7 @@ n_passengers = []
 labels = []
 
 for month in np.arange(1,13,1):
-    temp = df_logan1.loc[df_logan1['MONTH'] == month]
+    temp = df_logan.loc[df_logan['MONTH'] == month]
     n_flights.append(temp['DEPARTURES_PERFORMED'].sum())
     n_passengers.append(temp['PASSENGERS'].sum())
     labels.append(month)
@@ -114,14 +101,14 @@ plt.bar(X_axis + 0.2, n_passengers, 0.4, color='C0', label='Passengers')
 plt.xticks(X_axis, labels)
 plt.xlabel("Month")
 plt.ylabel("Number of passengers")
-plt.title('Arriving passengers per month at BOS between Mar 2021 and Feb 2022', y=1.07)
+plt.title('Arriving passengers per month at BOS in 2019', y=1.07)
 plt.show()
 
 plt.bar(X_axis - 0.2, n_flights, 0.4, color='C1', label='Flights')
 plt.xticks(X_axis, labels)
 plt.xlabel("Month")
 plt.ylabel("Number of flights")
-plt.title('Arriving flights per month at BOS between Mar 2021 and Feb 2022')
+plt.title('Arriving flights per month at BOS in 2019')
 plt.show()
 
 # Analysis 3: Origin country of all flights
@@ -130,8 +117,8 @@ n_flights = []
 n_passengers = []
 labels = []
 
-for country in df_logan1['ORIGIN_COUNTRY_NAME'].unique():
-    temp = df_logan1.loc[df_logan1['ORIGIN_COUNTRY_NAME'] == country]
+for country in df_logan['ORIGIN_COUNTRY_NAME'].unique():
+    temp = df_logan.loc[df_logan['ORIGIN_COUNTRY_NAME'] == country]
     n_flights.append(temp['DEPARTURES_PERFORMED'].sum())
     n_passengers.append(temp['PASSENGERS'].sum())
     labels.append(country)
@@ -145,20 +132,20 @@ fig, axes = plt.subplots(figsize=(11,9))
 plt.subplots_adjust(left=0.19)
 plt.barh(Y_axis, df_country_p['Passengers'], 0.8, color='C0', label='Passengers')
 plt.yticks(Y_axis, df_country_p['Country'])
-plt.xscale('log')
+# plt.xscale('log')
 plt.xlabel('Number of passengers')
 plt.ylabel('')
-plt.title('Arriving passengers by origin country at BOS between Mar 2021 and Feb 2022 (all flights)', y=1.07)
+plt.title('Arriving passengers by origin country at BOS in 2019 (all flights)', y=1.07)
 plt.show()
 
 fig, axes = plt.subplots(figsize=(11,9))
 plt.subplots_adjust(left=0.19)
 plt.barh(Y_axis, df_country_f['Flights'], 0.8, color='C1', label='Flights')
 plt.yticks(Y_axis, df_country_f['Country'])
-plt.xscale('log')
+# plt.xscale('log')
 plt.xlabel('Number of flights')
 plt.ylabel('')
-plt.title('Arriving flights by origin country at BOS between Mar 2021 and Feb 2022 (all flights)', y=1.07)
+plt.title('Arriving flights by origin country at BOS in 2019 (all flights)', y=1.07)
 plt.show()
 
 # Analysis 3: Origin country of flights > 3 hours
@@ -170,9 +157,9 @@ labels = []
 def filter_by_flight_time(df, thresh):
     return df.loc[df['APPROX_TIME'] > thresh]
 
-df_logan1_filt = filter_by_flight_time(df_logan1, 3)
+df_logan1_filt = filter_by_flight_time(df_logan, 3)
 
-for country in df_logan1['ORIGIN_COUNTRY_NAME'].unique():
+for country in df_logan['ORIGIN_COUNTRY_NAME'].unique():
     temp = df_logan1_filt.loc[df_logan1_filt['ORIGIN_COUNTRY_NAME'] == country]
     n_flights.append(temp['DEPARTURES_PERFORMED'].sum())
     n_passengers.append(temp['PASSENGERS'].sum())
@@ -187,19 +174,19 @@ fig, axes = plt.subplots(figsize=(11,9))
 plt.subplots_adjust(left=0.19)
 plt.barh(Y_axis, df_country_p['Passengers'], 0.8, color='C0', label='Passengers')
 plt.yticks(Y_axis, df_country_p['Country'])
-plt.xscale('log')
+# plt.xscale('log')
 plt.xlabel('Number of passengers')
 plt.ylabel('')
-plt.title('Arriving passengers by origin country at BOS between Mar 2021 and Feb 2022 (flights > 3 hr)', y=1.07)
+plt.title('Arriving passengers by origin country at BOS in 2019 (flights > 3 hr)', y=1.07)
 plt.show()
 
 fig, axes = plt.subplots(figsize=(11,9))
 plt.subplots_adjust(left=0.19)
 plt.barh(Y_axis, df_country_f['Flights'], 0.8, color='C1', label='Flights')
 plt.yticks(Y_axis, df_country_f['Country'])
-plt.xscale('log')
+# plt.xscale('log')
 plt.xlabel('Number of flights')
 plt.ylabel('')
-plt.title('Arriving flights by origin country at BOS between Mar 2021 and Feb 2022 (flights > 3 hr)', y=1.07)
+plt.title('Arriving flights by origin country at BOS in 2019 (flights > 3 hr)', y=1.07)
 plt.show()
 
